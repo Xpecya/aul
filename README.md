@@ -14,6 +14,7 @@ The document of this project will be written in both English and Chinese<br />
 I'm a Chinese, and I'll try my best to make the English version clear<br />
 if you find any word confusing please let me know<br />
 For English users, it is enough to the English part only<br />
+Generally speaking, I'll write useful things in English and free chat in Chinese LOL<br />
 have fun~<br />
 <br />
 AUL是"Awsome Utilities for Lua" (lua编程的炒鸡棒工具包) 的缩写<br />
