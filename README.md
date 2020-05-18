@@ -11,6 +11,8 @@ issues and reqeusts are welcome<br />
 you can also write to me by sending email: 737871141@qq.com<br />
 <br />
 The document of this project will be written in both English and Chinese<br />
+I'm a Chinese, and I'll try my best to make the English version clear<br />
+if you find any word confusing please let me know<br />
 For English users, it is enough to the English part only<br />
 have fun~<br />
 <br />
