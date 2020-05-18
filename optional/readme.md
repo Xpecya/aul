@@ -25,7 +25,7 @@ e.g. here is a function that may return nil value:
 now with Optional, it can be changed into another way;
 
     function neverReturnNil()
-        return Optional:new(mayReturnNil());
+        return Optional.new(mayReturnNil());
     end
     
 the function neverReturnNil is safe.<br />
