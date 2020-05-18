@@ -19,3 +19,6 @@ you can also write to me by sending email: 737871141@qq.com<br />
 顺带 如果有任何意见或建议 欢迎提issue requests<br />
 闲唠嗑也是可以的(限国人 因为我懒得跟老外瞎扯哈哈哈哈)<br />
 邮箱见上方 顺带QQ号好像也暴露了= =加Q聊也ok <br />
+<br />
+就酱紫~<br />
+have fun~<br />
