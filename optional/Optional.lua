@@ -1,5 +1,7 @@
 -- @requirement => MetatableBuilder
 -- @author => xpecya
+require "MetatableBuilder"
+
 Optional = {};
 
 -- create a new Optional object
@@ -32,7 +34,6 @@ function Optional.new(data)
         orElse = function() end
     end
 
-    local MetatableBuilder = require "MetatableBuilder";
     setmetatable(result, MetatableBuilder.new().immutable().index({
         isPresent = function() 
             return data ~= nil;
