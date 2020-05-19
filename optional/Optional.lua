@@ -39,7 +39,7 @@ function Optional.new(data)
         end, ifPresnet = ifPresnet, orElse = orElse, getValue = getValue
     }).newindex(function()
         print("Optional object is immutable!");    
-        end).build());
+    end).build());
     return result;
 end
 
