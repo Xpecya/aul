@@ -37,7 +37,7 @@ function Optional.new(data)
         isPresent = function() 
             return data ~= nil;
         end, ifPresnet = ifPresnet, orElse = orElse, getValue = getValue
-    }).build());
+    }).newindex(function() end).build());
     return result;
 end
 
