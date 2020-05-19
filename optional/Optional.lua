@@ -37,7 +37,9 @@ function Optional.new(data)
         isPresent = function() 
             return data ~= nil;
         end, ifPresnet = ifPresnet, orElse = orElse, getValue = getValue
-    }).newindex(function() end).build());
+    }).newindex(function()
+        print("Optional object is immutable!");    
+        end).build());
     return result;
 end
 
