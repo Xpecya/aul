@@ -57,7 +57,7 @@ function MetatableBuilder.new(config)
 
         -- string meta methods
         "concat",   --> ..
-        "len",       --> #
+        "len",      --> #
         "tostring", --> tostring
 
         -- comparation meta methods
