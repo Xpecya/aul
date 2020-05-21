@@ -18,12 +18,16 @@ local function OptionalSample()
 
     local nilData = nil;
     local nilOptional = Optional.new(nilData);
+    -- print: optional.getValue method invoke failed! errorMessage = /usr/lib/lua/5.3/Optional.lua:12: value is nil!
     getValueTest(nilOptional);
+    -- print: optional's data is nil!
     ifPresentTest(nilOptional);
 
     local notNilData = {};
     local notNilOptional = Optional.new(notNilData);
+    -- print: optional.getValue method invoke success! data = table: 0x558746c62090
     getValueTest(notNilOptional);
+    -- print: table: 0x558746c62090
     ifPresentTest(notNilOptional);
 end
 
