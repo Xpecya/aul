@@ -5,13 +5,13 @@ return {
         local result = {};
 
         local getValue;
-        local ifPresnet;
+        local ifPresent;
         local orElse;
         if data == nil then
             getValue = function() 
                 error("value is nil!"); 
             end
-            ifPresnet = function() 
+            ifPresent = function() 
                 return result; 
             end
             orElse = function (nilHandler)
@@ -21,7 +21,7 @@ return {
             getValue = function() 
                 return data; 
             end
-            ifPresnet = function(consumer) 
+            ifPresent = function(consumer) 
                 consumer(data);
                 return result;
             end
@@ -33,7 +33,7 @@ return {
             isPresent = function() 
                 return data ~= nil;
             end, 
-            ifPresnet = ifPresnet, 
+            ifPresent = ifPresent, 
             orElse = orElse, 
             getValue = getValue
         }).newindex(function()
