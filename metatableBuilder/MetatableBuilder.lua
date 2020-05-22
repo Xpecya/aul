@@ -45,7 +45,7 @@ local function new(config)
         div = getOrDefault(config, "div", resultTable, builder),   --> /
         mod = getOrDefault(config, "mod", resultTable, builder),   --> %
         pow = getOrDefault(config, "pow", resultTable, builder),   --> ^
-        unum = getOrDefault(config, "unum", resultTable, builder), --> -
+        unm = getOrDefault(config, "unm", resultTable, builder), --> -
         idiv = getOrDefault(config, "idiv", resultTable, builder), --> //
 
         -- binary meta methods
