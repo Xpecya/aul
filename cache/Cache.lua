@@ -1,17 +1,15 @@
 -- @requirement => MetatableBuilder, Optional
 -- @author xpecya
-require "MetatableBuilder";
-require "Optional";
-
-Cache = {};
+local Cache = {};
 
 -- add a prefix before get or set data
 -- so new data will not mask the functions
 local prefix = "__";
 
 local function get(cacheObject, key)
+    local optional = require("Optional");
     assert(key ~= nil, "key is nil!");
-    return Optional.new(cacheObject[prefix .. key]);
+    return optional.new(cacheObject[prefix .. key]);
 end
 
 -- only return nil when defaultValue is nil
@@ -57,8 +55,9 @@ local function remove(cacheObject, key)
 end
 
 function Cache.new()
+    local metatableBuilder = require("MetatableBuilder");
     local cacheObject = {};
-    setmetatable(cacheObject, MetatableBuilder.new().immutable().index({
+    setmetatable(cacheObject, metatableBuilder.new().immutable().index({
         get = get,
         getOrDefault = getOrDefault,
         computeIfAbsent = computeIfAbsent,
