@@ -1,7 +1,7 @@
 # AUL
 <br />
 AUL is the abbreviation of "Awsome Utilities for Lua"<br />
-(and alse the reverse of lua LOL)<br />
+(and also the reverse of lua LOL)<br />
 this project contains many useful tools in lua programming<br />
 some of which are my works<br />
 details of each project can be found in their own folders<br />
