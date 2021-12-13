@@ -104,15 +104,15 @@ also pairs and ipairs is supported:
     for k, v in pairs(stackInstance) do 
         print(k .. ":" .. v);
     end
-    -- 1:a
+    -- 1:c
     -- 2:b
-    -- 3:c
+    -- 3:a
     for k, v in ipairs(stackInstance) do 
         print(k .. ":" .. v);
     end
-    -- 1:a
+    -- 1:c
     -- 2:b
-    -- 3:c
+    -- 3:a
 
 use #stackInstance to get the length of the queue:
 
