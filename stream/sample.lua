@@ -33,7 +33,6 @@ local anotherStream = Stream.of(existedStream);
 local streamA = Stream.of({1});
 local streamB = Stream.of({2});
 local concatStream = Stream.concat(streamA, streamB); -- same as Stream.of({1, 2})
-test(concatStream.toArray());
 
 --------------TOARRAY FUNCTION--------------
 
