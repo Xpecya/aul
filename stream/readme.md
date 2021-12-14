@@ -4,7 +4,7 @@ Stream api allows you control your array data in another way<br />
 
 to create a Stream instance:
 
-    local Stream = require "Stream";
+    local Stream = require "aul.stream.Stream";
 
     -- create an empty Stream
     local emtpyStream = Stream.empty();
@@ -160,7 +160,6 @@ useful when doing paging operations
 
 peek function lets you access the data without modification:
 
-    -- Stream.of(1, 2, 3, 4, 5)
     stream.map(function(item) 
         return item + 1;
     end).peek(function(item) 
@@ -168,8 +167,8 @@ peek function lets you access the data without modification:
     end).filter(function(item) 
         return item > 3
     end).peek(function(item) 
-        print(item) -- print 4 5 by order
-    end).toArray() -- {4, 5}
+        print(item) -- print 4 5 6 by order
+    end).toArray() -- {4, 5, 6}
 
 peek function is useful when logging and caching
 
@@ -200,7 +199,7 @@ it will collect the data with key-value pairs:
         return "value" .. item;
     end, function(item) 
         return item;
-    end) -- {"value1" = 1, "value2" = 2, "value3" = 3, "value4" = 4, "value5" = 5}
+    end); -- {"value1" = 1, "value2" = 2, "value3" = 3, "value4" = 4, "value5" = 5}
 
 toTable function has two args. the first function generator the key and the second function generate the value
 
@@ -223,11 +222,11 @@ just like peek, but peek is a middle function while forEach is a collecting func
     stream.map(function(item) 
         return item + 1;
     end).peek(function(item) 
-        print(item) -- print 1 2 3 4 5 by order
+        print(item) -- print 2 3 4 5 6 by order
     end).filter(function(item) 
         return item > 3
     end).forEach(function(item) 
-        print(item) -- print 4 5 by order
+        print(item) -- print 4 5 6 by order
     end)
 
 notice that as a middle function, peek function will not execute immediately, yet forEach, as a collecting function, always do
