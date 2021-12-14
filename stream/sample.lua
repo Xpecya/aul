@@ -29,6 +29,12 @@ local tableStream = Stream.of(existedTable);
 local existedStream = Stream.empty();
 local anotherStream = Stream.of(existedStream);
 
+-- concat two existing stream
+local streamA = Stream.of({1});
+local streamB = Stream.of({2});
+local concatStream = Stream.concat(streamA, streamB); -- same as Stream.of({1, 2})
+test(concatStream.toArray());
+
 --------------TOARRAY FUNCTION--------------
 
 local stream = Stream.of(1, 2, 3, 4, 5);
