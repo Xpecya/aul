@@ -6,12 +6,6 @@
 
 local Stream = require "aul.stream.Stream";
 
-local function test(stream) 
-    for k, v in pairs(stream) do
-        print(k .. ":" .. v);
-    end
-end
-
 --------------CREATE STREAM INSTANCE--------------
 
 -- create an empty Stream
