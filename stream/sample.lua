@@ -6,14 +6,6 @@
 
 local Stream = require "aul.stream.Stream";
 
-local testTable = {{1,2,3}, {4,5,6}, {7,8,9}}
-Stream.of(testTable).flatMap(function(item) 
-    return Stream.of(item);
-end).toArray();
-for i, v in ipairs(testTable) do
-    print(v);
-end
-
 --------------CREATE STREAM INSTANCE--------------
 
 -- create an empty Stream
