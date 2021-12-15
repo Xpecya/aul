@@ -1,8 +1,9 @@
 -- @requirements: MetatableBuilder, Stream
 -- @author: xpecya
 
-local MetatableBuilder = require "MetatableBuilder";
-local Stream = require "Stream"
+local MetatableBuilder = require "aul.metatableBuilder.MetatableBuilder";
+local Stream = require "aul.stream.Stream"
+
 local function new() 
     local node = {};
     local last = node;
