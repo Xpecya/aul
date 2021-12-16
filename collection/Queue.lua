@@ -4,96 +4,46 @@
 local MetatableBuilder = require "aul.metatableBuilder.MetatableBuilder";
 local Stream = require "aul.stream.Stream"
 
-local function new() 
-    local node = {};
-    local last = node;
-    local length = 0;
-
-    local queue = {};
-
-    local function add(element)
-        if length == 0 then
-            node.value = element;
-        else
-            local next = {};
-            next.value = element;
-            last.next = next;
-            last = next;
-        end
-        length = length + 1;
-    end
-    
-    local function remove()
-        local result;
-        if length == 1 then 
-            result = node.value;
-            node.value = nil;
-        else 
-            result = node.value;
-            node = node.next;
-        end
-        length = length - 1;
-        return result;
-    end
-    
-    local function head() 
-        return last.value;
-    end
-    
-    local function tail() 
-        return node.value;
-    end
-    
-    local function getLength()
-        return length;
-    end
-
-    local function iterator() 
-        local index = 0;
-        local current = node;
-        return setmetatable({}, MetatableBuilder.new().immutable().index({
-            hasNext = function() 
-                return index < length;
-            end,
-            next = function() 
-                local result = current.value;
-                index = index + 1;
-                current = current.next;
-                return result;
-            end
-        }).build());
-    end
-
-    local function next(iterator, index) 
-        if iterator.hasNext() then
-            return index + 1, iterator.next();
-        end
-        return nil;
-    end
-    
-    local function ipairs(input) 
-        local iterator = input.iterator();
-        return next, iterator, 0;
-    end
-    
-    local function pairs(input) 
-        return ipairs(input);
-    end
-
-    local function stream() 
-        return Stream.of(queue);
-    end
-
-    return setmetatable(queue, MetatableBuilder.new().immutable().index({
-        add = add,
-        remove = remove,
-        head = head,
-        tail = tail,
-        iterator = iterator,
-        stream = stream
-    }).len(getLength).pairs(pairs).ipairs(ipairs).build());
-end
-
 return setmetatable({}, MetatableBuilder.new().immutable().index({
-    new = new
+    new = function(...)
+        local queue = {};
+        local data = { ... };
+        local headIndex = 1;
+        local tailIndex = #data;
+
+        local function queueNext(_, index)
+            local localIndex = index + headIndex;
+            if localIndex > tailIndex then
+                return nil;
+            end
+            return index + 1, data[localIndex];
+        end
+
+        local function queuePairs()
+            return queueNext, nil, 0;
+        end
+
+        return setmetatable(queue, MetatableBuilder.new().immutable().index({
+            push = function(item)
+                assert(item ~= nil, "input is nil!");
+                table.insert(data, item);
+                tailIndex = tailIndex + 1;
+            end,
+            pop = function()
+                local result = data[headIndex];
+                if headIndex <= tailIndex then
+                    headIndex = headIndex + 1;
+                else
+                    -- 初始化
+                    data = {};
+                    headIndex = 1;
+                    tailIndex = 0;
+                end
+                return result;
+            end,
+            stream = function()
+                return Stream.of(queue);
+            end
+        }).pairs(queuePairs).ipairs(queuePairs).build());
+    end
 }).build());
