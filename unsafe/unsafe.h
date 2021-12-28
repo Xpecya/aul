@@ -41,7 +41,7 @@ int unsafe_check_stack(lua_State *L);
 int unsafe_create_table(lua_State *L);
 
 // lua_dump is not in this plan
-// there's no good path to send a lua_Writer function
+// there isn't a good way to send a lua_Writer function
 // int unsafe_dump(lua_State *L);
 
 // lua_error is not in this plan
