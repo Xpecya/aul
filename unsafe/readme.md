@@ -50,7 +50,6 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 
 2. 检查当前lua栈的容量 => checkStack
 
-
     -- 要检查的容量
     local size = 1024;
     local result = I_know_what_I_am_doing_and_it_is_fxxking_safe.checkStack(size);
@@ -64,7 +63,6 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 
 3. 创建一个table => createTable
 
-    
     -- table数组部分长度
     local narr = 10;
     -- table哈希表部分长度
@@ -84,7 +82,6 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 
 4. 想玩什么玩什么吧 => getExtraSpace
 
-
     local extraSpace = I_know_what_I_am_doing_and_it_is_fxxking_safe.getExtraSpace();
 
 这个方法是lua_getextraspace的封装。返回值是一个light userdata, extra space的指针。<br />
@@ -92,7 +89,6 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 当然你想玩什么花活儿也成，电脑搞炸了别给我提issue，一概不受理<br />
 
 5. 生个崽玩玩 => createNewState
-
 
     -- 是否公开包含所有标准库 默认包含
     local includeStandardLibs = true;
@@ -109,7 +105,6 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 当然还有更多的玩法，但是那就不在这里多说了，懂的都懂<br />
 
 6. 执行个脚本 => doFile
-
 
     -- state使用nil的场合，调用当前state
     local state = nil;
