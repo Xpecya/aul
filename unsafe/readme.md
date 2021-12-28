@@ -131,6 +131,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 此外，在unsafe.h中，我列举了一系列我不打算做的api<br />
 主要理由都是，你可以直接在lua层面很简单实现的功能，就不要用unsafe折腾<br />
 未来Unsafe可能会有所扩充，但是确定不会做的依然不会做<br />
+已经明确讲了的，就不要发issue问我xxx能不能做 问就是不能<br />
 
 That's all!<br />
 Have fun!<br />
