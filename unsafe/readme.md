@@ -35,8 +35,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 
 下面开始，所有的内容，都是<b>不安全</b>的<br />
 
-1. 获取当前的state => getState
-
+获取当前的state => getState
 
     local state = I_know_what_I_am_doing_and_it_is_fxxking_safe.getState();
 
@@ -48,7 +47,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 二来，这个操作实在是太危险了。我可不希望你们把自己的电脑搞炸了然后给我提issue<br />
 因此这部分是不会有的，我只给你们暴露一个light userdata 剩下的你们看着办<br />
 
-2. 检查当前lua栈的容量 => checkStack
+检查当前lua栈的容量 => checkStack
 
     -- 要检查的容量
     local size = 1024;
@@ -61,7 +60,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 整个unsafe包中为数不多的，也许不那么危险的操作<br />
 不想加之一，应该没有之一，就是最安全的一个<br />
 
-3. 创建一个table => createTable
+创建一个table => createTable
 
     -- table数组部分长度
     local narr = 10;
@@ -80,7 +79,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 所以前面一个api的价值就体现出来了<br />
 总之，创建的时候悠着点<br />
 
-4. 想玩什么玩什么吧 => getExtraSpace
+想玩什么玩什么吧 => getExtraSpace
 
     local extraSpace = I_know_what_I_am_doing_and_it_is_fxxking_safe.getExtraSpace();
 
@@ -88,7 +87,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 这个东西相信熟悉lua的人应该都知道，一般拿来做个缓存啊，尤其是io数据的缓存什么的<br />
 当然你想玩什么花活儿也成，电脑搞炸了别给我提issue，一概不受理<br />
 
-5. 生个崽玩玩 => createNewState
+生个崽玩玩 => createNewState
 
     -- 是否公开包含所有标准库 默认包含
     local includeStandardLibs = true;
@@ -104,7 +103,7 @@ aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
 这样做的好处（之一）在于，每一个state中添加的全局变量是不会污染其他state的<br />
 当然还有更多的玩法，但是那就不在这里多说了，懂的都懂<br />
 
-6. 执行个脚本 => doFile
+执行个脚本 => doFile
 
     -- state使用nil的场合，调用当前state
     local state = nil;
