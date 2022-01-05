@@ -18,7 +18,7 @@ unsafe包含一个很薄的c语言层<br />
     gcc -shared -fPIC -o internal.so aul/unsafe/unsafe.c
 
 然后把这个文件拷贝到你的lua_path能找到的地方<br />
-aul内部查找这个文件的路径为: aul.unsafe.unsafe.internal<br />
+aul内部查找这个文件的路径为: aul.unsafe.internal<br />
 后续会做一个makefile 或者Cmake来处理这个问题<br />
 什么时候有时间的吧<br />
 

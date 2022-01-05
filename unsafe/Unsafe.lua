@@ -2,7 +2,7 @@
 -- @author: xpecya
 
 local MetatableBuilder = require "aul.metatableBuilder.MetatableBuilder";
-local UnsafeInternal = require "aul.unsafe.unsafe.internal";
+local UnsafeInternal = require "aul.unsafe.internal";
 
 local function getState()
     return UnsafeInternal.unsafe_get_state();
