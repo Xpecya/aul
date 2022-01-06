@@ -9,7 +9,7 @@ Now with printf function:
 
     local standard = require "aul.standard.standard";
     local template = "foo = %s\r\n";
-    standard.printf(template, "bar"); -- print 'foo = bar\r\n'
+    standard.printf(template, "bar"); -- just like print("foo = " .. "bar");
 
 just like that in C. <br />
 printf function will call string.format() function first, then call io.stdout:write() to print it<br />
@@ -17,7 +17,7 @@ Additionally, you can configure the function in standard.lua globally:
 
     require("aul.standard.standard").global();
     local template = "foo = %s\r\n";
-    printf(template, "bar"); -- print 'foo = bar\r\n'
+    printf(template, "bar"); -- just like print("foo = " .. "bar");
 
 The global function needs to be called only once.<br />
 And the printf function will then be configured in the global table.<br />
