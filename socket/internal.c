@@ -413,6 +413,12 @@ int internal_getsockname_sockaddr_un(lua_State *L, struct sockaddr *address, int
   return 2;
 }
 
+// just like internal_bind_sockaddr_ns
+// todo: finish this function
+int internal_getsockname_sockaddr_ns(lua_State *L, struct sockaddr *address, int length) {
+  return internal_getsockname_sockaddr(L, address, length);
+}
+
 int internal_get_socket_name(lua_State *L) {
   int socket = lua_tointeger(L, 1);
   struct sockaddr address;
@@ -440,9 +446,10 @@ int internal_get_socket_name(lua_State *L) {
       if (strcmp("sockaddr_un", type) == 0) {
         return internal_getsockname_sockaddr_un(L, &address, length);
       }
-//      if (strcmp("sockaddr_ns", type) == 0) {
-//        internal_bind_sockaddr_ns(L, &address);
-//      } if (strcmp("sockaddr_at", type) == 0) {
+      if (strcmp("sockaddr_ns", type) == 0) {
+        return internal_getsockname_sockaddr_ns(L, &address, length);
+      }
+//      if (strcmp("sockaddr_at", type) == 0) {
 //        internal_bind_sockaddr_at(L, &address);
 //      }
 //      internal_bind_sockaddr_dl(L, &address);
