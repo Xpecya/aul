@@ -375,7 +375,34 @@ int internal_bind(lua_State *L) {
   return 0;
 }
 
-int internal_getsockname_sockaddr(lua_State *L, int socket) {
+int internal_getsockname_sockaddr(lua_State *L, struct sockaddr *address, int length) {
+  lua_createtable(L, 0, 2);
+  lua_pushinteger(L, address -> sa_family);
+  lua_setfield(L, 3, "sa_family");
+  lua_pushstring(L, address -> sa_data);
+  lua_setfield(L, 3, "sa_data");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
+int internal_getsockname_sockaddr_in(lua_State *L, struct sockaddr *address, int length) {
+  struct sockaddr_in *sockaddr_in_t = (struct sockaddr_in*) address;
+
+  lua_createtable(L, 0, 2);
+  lua_pushinteger(L, sockaddr_in_t -> sin_family);
+  lua_setfield(L, 3, "sin_family");
+  lua_pushinteger(L, ntohs(sockaddr_in_t -> sin_port));
+  lua_setfield(L, 3, "sin_port");
+  lua_createtable(L, 0, 1);
+  lua_pushstring(L, inet_ntoa(sockaddr_in_t -> sin_addr));
+  lua_setfield(L, 4, "s_addr");
+  lua_setfield(L, 3, "sin_addr");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
+int internal_get_socket_name(lua_State *L) {
+  int socket = lua_tointeger(L, 1);
   struct sockaddr address;
   memset(&address, 0, sizeof(address));
   socklen_t length;
@@ -389,53 +416,14 @@ int internal_getsockname_sockaddr(lua_State *L, int socket) {
     return 0;
   }
 
-  lua_createtable(L, 0, 2);
-  lua_pushinteger(L, address.sa_family);
-  lua_setfield(L, 3, "sa_family");
-  lua_pushstring(L, address.sa_data);
-  lua_setfield(L, 3, "sa_data");
-  lua_pushinteger(L, length);
-  return 2;
-}
-
-int internal_getsockname_sockaddr_in(lua_State *L, int socket) {
-  struct sockaddr_in address;
-  memset(&address, 0, sizeof(address));
-  socklen_t length;
-
-  errno = 0;
-  int result = getsockname(socket, (struct sockaddr*)&address, &length);
-  if (result == -1) {
-    char text[1024];
-    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
-    luaL_error(L, text);
-    return 0;
-  }
-
-  lua_createtable(L, 0, 2);
-  lua_pushinteger(L, address.sin_family);
-  lua_setfield(L, 3, "sin_family");
-  lua_pushinteger(L, ntohs(address.sin_port));
-  lua_setfield(L, 3, "sin_port");
-  lua_createtable(L, 0, 1);
-  lua_pushstring(L, inet_ntoa(address.sin_addr));
-  lua_setfield(L, 4, "s_addr");
-  lua_setfield(L, 3, "sin_addr");
-  lua_pushinteger(L, length);
-  return 2;
-}
-
-int internal_get_socket_name(lua_State *L) {
-  int socket = lua_tointeger(L, 1);
   const char *socket_type = lua_tostring(L, 2);
-  int length = strlen(socket_type);
-  switch (length) {
+  switch (strlen(socket_type)) {
     case 8: {
-      return internal_getsockname_sockaddr(L, socket);
+      return internal_getsockname_sockaddr(L, &address, length);
     }
     case 11: {
       if (strcmp("sockaddr_in", socket_type) == 0) {
-        return internal_getsockname_sockaddr_in(L, socket);
+        return internal_getsockname_sockaddr_in(L, &address, length);
       }
 //      if (strcmp("sockaddr_un", type) == 0) {
 //        internal_bind_sockaddr_un(L, &address);
