@@ -401,6 +401,18 @@ int internal_getsockname_sockaddr_in(lua_State *L, struct sockaddr *address, int
   return 2;
 }
 
+int internal_getsockname_sockaddr_un(lua_State *L, struct sockaddr *address, int length) {
+  struct sockaddr_un *sockaddr_un_t = (struct sockaddr_un*) address;
+
+  lua_createtable(L, 0, 2);
+  lua_pushinteger(L, sockaddr_un_t -> sun_family);
+  lua_setfield(L, 3, "sun_family");
+  lua_pushstring(L, sockaddr_un_t -> sun_path);
+  lua_setfield(L, 3, "sun_path");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
 int internal_get_socket_name(lua_State *L) {
   int socket = lua_tointeger(L, 1);
   struct sockaddr address;
@@ -425,9 +437,10 @@ int internal_get_socket_name(lua_State *L) {
       if (strcmp("sockaddr_in", socket_type) == 0) {
         return internal_getsockname_sockaddr_in(L, &address, length);
       }
-//      if (strcmp("sockaddr_un", type) == 0) {
-//        internal_bind_sockaddr_un(L, &address);
-//      } if (strcmp("sockaddr_ns", type) == 0) {
+      if (strcmp("sockaddr_un", type) == 0) {
+        return internal_getsockname_sockaddr_un(L, &address, length);
+      }
+//      if (strcmp("sockaddr_ns", type) == 0) {
 //        internal_bind_sockaddr_ns(L, &address);
 //      } if (strcmp("sockaddr_at", type) == 0) {
 //        internal_bind_sockaddr_at(L, &address);
