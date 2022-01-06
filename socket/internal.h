@@ -11,6 +11,7 @@
 #include <netipx/ipx.h>
 #include <sys/un.h>
 #include <linux/x25.h>
+#include <arpa/inet.h>
 
 // create a socket
 int internal_socket(lua_State *L);

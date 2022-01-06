@@ -64,7 +64,7 @@ void internal_bind_sockaddr_in(lua_State *L, struct sockaddr *address) {
   field_type = lua_getfield(L, 2, "sin_port");
   if (field_type == LUA_TNUMBER) {
     int sin_port = lua_tointeger(L, 5);
-    sockaddr_in_t -> sin_port = sin_port;
+    sockaddr_in_t -> sin_port = htons(sin_port);
   }
 
   field_type = lua_getfield(L, 2, "sin_addr");
@@ -73,6 +73,9 @@ void internal_bind_sockaddr_in(lua_State *L, struct sockaddr *address) {
       if (field_type == LUA_TNUMBER) {
         int s_addr = lua_tointeger(L, 7);
         sockaddr_in_t -> sin_addr.s_addr = s_addr;
+      } else if (field_type == LUA_TSTRING) {
+        const char *s_addr = lua_tostring(L, 7);
+        sockaddr_in_t -> sin_addr.s_addr = inet_addr(s_addr);
       }
   }
 }
@@ -395,6 +398,33 @@ int internal_getsockname_sockaddr(lua_State *L, int socket) {
   return 2;
 }
 
+int internal_getsockname_sockaddr_in(lua_State *L, int socket) {
+  struct sockaddr_in address;
+  memset(&address, 0, sizeof(address));
+  socklen_t length;
+
+  errno = 0;
+  int result = getsockname(socket, (struct sockaddr*)&address, &length);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+    return 0;
+  }
+
+  lua_createtable(L, 0, 2);
+  lua_pushinteger(L, address.sin_family);
+  lua_setfield(L, 3, "sin_family");
+  lua_pushinteger(L, ntohs(address.sin_port));
+  lua_setfield(L, 3, "sin_port");
+  lua_createtable(L, 0, 1);
+  lua_pushstring(L, inet_ntoa(address.sin_addr));
+  lua_setfield(L, 4, "s_addr");
+  lua_setfield(L, 3, "sin_addr");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
 int internal_get_socket_name(lua_State *L) {
   int socket = lua_tointeger(L, 1);
   const char *socket_type = lua_tostring(L, 2);
@@ -403,20 +433,20 @@ int internal_get_socket_name(lua_State *L) {
     case 8: {
       return internal_getsockname_sockaddr(L, socket);
     }
-//    case 11: {
-//      if (strcmp("sockaddr_in", type) == 0) {
-//        internal_bind_sockaddr_in(L, &address);
-//      } else if (strcmp("sockaddr_un", type) == 0) {
+    case 11: {
+      if (strcmp("sockaddr_in", socket_type) == 0) {
+        return internal_getsockname_sockaddr_in(L, socket);
+      }
+//      if (strcmp("sockaddr_un", type) == 0) {
 //        internal_bind_sockaddr_un(L, &address);
-//      } else if (strcmp("sockaddr_ns", type) == 0) {
+//      } if (strcmp("sockaddr_ns", type) == 0) {
 //        internal_bind_sockaddr_ns(L, &address);
-//      } else if (strcmp("sockaddr_at", type) == 0) {
+//      } if (strcmp("sockaddr_at", type) == 0) {
 //        internal_bind_sockaddr_at(L, &address);
-//      } else {
-//        internal_bind_sockaddr_dl(L, &address);
 //      }
-//      break;
-//    }
+//      internal_bind_sockaddr_dl(L, &address);
+//
+    }
 //    case 12: {
 //      if (strcmp("sockaddr_in6", type) == 0) {
 //        internal_bind_sockaddr_in6(L, &address);
