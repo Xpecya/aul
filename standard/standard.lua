@@ -2,11 +2,15 @@
 -- @author: xpecya
 
 local MetatableBuilder = require "aul.metatableBuilder.MetatableBuilder";
-local internal = require "aul.standard.internal";
+
+local function localPrintf(template, ...)
+    local data = string.format(template, ...);
+    io.stdout:write(data);
+end
 
 return setmetatable({}, MetatableBuilder.new().immutable().index({
-    printf = internal.printf,
+    printf = localPrintf,
     global = function()
-        printf = internal.printf
+        printf = localPrintf
     end
 }).build());
