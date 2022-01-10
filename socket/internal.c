@@ -38,7 +38,7 @@ int internal_socketpair(lua_State *L) {
     return 2;
 }
 
-void internal_bind_sockaddr(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr(lua_State *L, struct sockaddr *address) {
   int field_type = lua_getfield(L, 2, "sa_family");
   if (field_type == LUA_TNUMBER) {
     int sa_family = lua_tointeger(L, 4);
@@ -52,7 +52,7 @@ void internal_bind_sockaddr(lua_State *L, struct sockaddr *address) {
   }
 }
 
-void internal_bind_sockaddr_in(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_in(lua_State *L, struct sockaddr *address) {
   struct sockaddr_in *sockaddr_in_t = (struct sockaddr_in*) address;
 
   int field_type = lua_getfield(L, 2, "sin_family");
@@ -80,7 +80,7 @@ void internal_bind_sockaddr_in(lua_State *L, struct sockaddr *address) {
   }
 }
 
-void internal_bind_sockaddr_un(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_un(lua_State *L, struct sockaddr *address) {
   struct sockaddr_un *sockaddr_un_t = (struct sockaddr_un*) address;
 
   int field_type = lua_getfield(L, 2, "sun_family");
@@ -100,19 +100,19 @@ void internal_bind_sockaddr_un(lua_State *L, struct sockaddr *address) {
 // i can't find any usage of sockaddr_dl
 // so far it is considered the same as sockaddr
 // todo: finish this function
-void internal_bind_sockaddr_ns(lua_State *L, struct sockaddr *address) {
-  internal_bind_sockaddr(L, address);
+void internal_to_sockaddr_ns(lua_State *L, struct sockaddr *address) {
+  internal_to_sockaddr(L, address);
 }
 
 // though defined in socket.h
 // i can't find any usage of sockaddr_dl
 // so far it is considered the same as sockaddr
 // todo: finish this function
-void internal_bind_sockaddr_dl(lua_State *L, struct sockaddr *address) {
-  internal_bind_sockaddr(L, address);
+void internal_to_sockaddr_dl(lua_State *L, struct sockaddr *address) {
+  internal_to_sockaddr(L, address);
 }
 
-void internal_bind_sockaddr_at(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_at(lua_State *L, struct sockaddr *address) {
   struct sockaddr_at *sockaddr_at_t = (struct sockaddr_at*) address;
 
   int field_type = lua_getfield(L, 2, "sat_family");
@@ -143,7 +143,7 @@ void internal_bind_sockaddr_at(lua_State *L, struct sockaddr *address) {
   }
 }
 
-void internal_bind_sockaddr_in6(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_in6(lua_State *L, struct sockaddr *address) {
   struct sockaddr_in6 *sockaddr_in6_t = (struct sockaddr_in6*) address;
 
   int field_type = lua_getfield(L, 2, "sin6_family");
@@ -201,7 +201,7 @@ void internal_bind_sockaddr_in6(lua_State *L, struct sockaddr *address) {
   }
 }
 
-void internal_bind_sockaddr_ipx(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_ipx(lua_State *L, struct sockaddr *address) {
   struct sockaddr_ipx *sockaddr_ipx_t = (struct sockaddr_ipx*) address;
 
   int field_type = lua_getfield(L, 2, "sipx_family");
@@ -239,19 +239,19 @@ void internal_bind_sockaddr_ipx(lua_State *L, struct sockaddr *address) {
 // i can't find any usage of sockaddr_eon
 // so far it is considered the same as sockaddr
 // todo: finish this function
-int internal_bind_sockaddr_iso(lua_State *L, struct sockaddr *address) {
-  internal_bind_sockaddr(L, address);
+int internal_to_sockaddr_iso(lua_State *L, struct sockaddr *address) {
+  internal_to_sockaddr(L, address);
 }
 
 // though defined in socket.h
 // i can't find any usage of sockaddr_eon
 // so far it is considered the same as sockaddr
 // todo: finish this function
-void internal_bind_sockaddr_eon(lua_State *L, struct sockaddr *address) {
-  internal_bind_sockaddr(L, address);
+void internal_to_sockaddr_eon(lua_State *L, struct sockaddr *address) {
+  internal_to_sockaddr(L, address);
 }
 
-void internal_bind_sockaddr_x25(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_x25(lua_State *L, struct sockaddr *address) {
   struct sockaddr_x25 *sockaddr_x25_t = (struct sockaddr_x25*) address;
 
   int field_type = lua_getfield(L, 2, "sx25_addr");
@@ -267,7 +267,7 @@ void internal_bind_sockaddr_x25(lua_State *L, struct sockaddr *address) {
   }
 }
 
-void internal_bind_sockaddr_ax25(lua_State *L, struct sockaddr *address) {
+void internal_to_sockaddr_ax25(lua_State *L, struct sockaddr *address) {
   struct sockaddr_ax25 *sockaddr_ax25_t = (struct sockaddr_ax25*) address;
 
   int field_type = lua_getfield(L, 2, "sax25_family");
@@ -296,80 +296,97 @@ void internal_bind_sockaddr_ax25(lua_State *L, struct sockaddr *address) {
 // i can't find any usage of sockaddr_eon
 // so far it is considered the same as sockaddr
 // todo: finish this function
-void internal_bind_sockaddr_inarp(lua_State *L, struct sockaddr *address) {
-  internal_bind_sockaddr(L, address);
+void internal_to_sockaddr_inarp(lua_State *L, struct sockaddr *address) {
+  internal_to_sockaddr(L, address);
 }
 
-int internal_bind(lua_State *L) {
+struct internal_addr {
+  struct sockaddr address;
+  int socket;
+};
+
+int internal_to_addr(lua_State *L, struct internal_addr *addr_t) {
   struct sockaddr address;
   memset(&address, 0, sizeof(address));
 
   int data_type = lua_type(L, 1);
   if (data_type != LUA_TNUMBER) {
     luaL_error(L, "the first argument of bind is not a number!");
-    return 0;
+    return -1;
   }
   int socket = lua_tointeger(L, 1);
 
   data_type = lua_type(L, 2);
   if (data_type != LUA_TTABLE) {
     luaL_error(L, "the second argument of bind is not a table!");
-    return 0;
+    return -1;
   }
 
   data_type = lua_getfield(L, 2, "type");
   if (data_type != LUA_TSTRING) {
     luaL_error(L, "table's type is not specified! It must be standard lua string!");
-    return 0;
+    return -1;
   }
   const char* type = lua_tostring(L, 3);
 
   int length = strlen(type);
   switch(length) {
     case 8: {
-      internal_bind_sockaddr(L, &address);
+      internal_to_sockaddr(L, &address);
       break;
     }
     case 11: {
       if (strcmp("sockaddr_in", type) == 0) {
-        internal_bind_sockaddr_in(L, &address);
+        internal_to_sockaddr_in(L, &address);
       } else if (strcmp("sockaddr_un", type) == 0) {
-        internal_bind_sockaddr_un(L, &address);
+        internal_to_sockaddr_un(L, &address);
       } else if (strcmp("sockaddr_ns", type) == 0) {
-        internal_bind_sockaddr_ns(L, &address);
+        internal_to_sockaddr_ns(L, &address);
       } else if (strcmp("sockaddr_at", type) == 0) {
-        internal_bind_sockaddr_at(L, &address);
+        internal_to_sockaddr_at(L, &address);
       } else {
-        internal_bind_sockaddr_dl(L, &address);
+        internal_to_sockaddr_dl(L, &address);
       }
       break;
     }
     case 12: {
       if (strcmp("sockaddr_in6", type) == 0) {
-        internal_bind_sockaddr_in6(L, &address);
+        internal_to_sockaddr_in6(L, &address);
       } else if (strcmp("sockaddr_ipx", type) == 0) {
-        internal_bind_sockaddr_ipx(L, &address);
+        internal_to_sockaddr_ipx(L, &address);
       } else if (strcmp("sockaddr_iso", type) == 0) {
-        internal_bind_sockaddr_iso(L, &address);
+        internal_to_sockaddr_iso(L, &address);
       } else if (strcmp("sockaddr_x25", type) == 0) {
-        internal_bind_sockaddr_x25(L, &address);
+        internal_to_sockaddr_x25(L, &address);
       } else {
-        internal_bind_sockaddr_eon(L, &address);
+        internal_to_sockaddr_eon(L, &address);
       }
       break;
     }
     case 13: {
-      internal_bind_sockaddr_ax25(L, &address);
+      internal_to_sockaddr_ax25(L, &address);
       break;
     }
     case 14: {
-      internal_bind_sockaddr_inarp(L, &address);
+      internal_to_sockaddr_inarp(L, &address);
       break;
     }
   }
+  addr_t -> address = address;
+  addr_t -> socket = socket;
+  return 0;
+}
+
+int internal_bind(lua_State *L) {
+  struct internal_addr addr_t;
+  memset(&addr_t, 0, sizeof(addr_t));
+  int result = internal_to_addr(L, &addr_t);
+  if (result == -1) {
+    return 0;
+  }
 
   errno = 0;
-  int result = bind(socket, &address, sizeof(address));
+  result = bind(addr_t.socket, &addr_t.address, sizeof(addr_t.address));
   if (result == -1) {
     char text[1024];
     sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
@@ -593,11 +610,102 @@ int internal_get_socket_name(lua_State *L) {
   }
 }
 
+// open a connection
+int internal_connect(lua_State *L) {
+  struct internal_addr addr_t;
+  memset(&addr_t, 0, sizeof(addr_t));
+  int result = internal_to_addr(L, &addr_t);
+  if (result == -1) {
+    return 0;
+  }
+
+  errno = 0;
+  result = connect(addr_t.socket, &addr_t.address, sizeof(addr_t.address));
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+  }
+  return 0;
+}
+
+// get peer name
+int internal_get_peer_name(lua_State *L) {
+  return 0;
+}
+
+// send data
+int internal_send(lua_State *L) {
+  return 0;
+}
+
+// receive data
+int internal_recv(lua_State *L) {
+  return 0;
+}
+
+// send to
+int internal_send_to(lua_State *L) {
+  return 0;
+}
+
+// receive from
+int internal_recv_from(lua_State *L) {
+  return 0;
+}
+
+// send message
+int internal_send_msg(lua_State *L) {
+  return 0;
+}
+
+// receive message
+int internal_recv_msg(lua_State *L) {
+  return 0;
+}
+
+// get socket option
+int internal_get_sock_opt(lua_State *L) {
+  return 0;
+}
+
+// set socket option
+int internal_set_sock_opt(lua_State *L) {
+  return 0;
+}
+
+// listen to a socket
+int internal_listen(lua_State *L) {
+  return 0;
+}
+
+// accept from a socket
+int internal_accept(lua_State *L) {
+  return 0;
+}
+
+// shutdown a socket
+int internal_shutdown(lua_State *L) {
+  return 0;
+}
+
 static const luaL_Reg register_function[] = {
   {"socket", internal_socket},
   {"socketpair", internal_socketpair},
   {"bind", internal_bind},
-  {"getsockname", internal_get_socket_name},
+  {"connect", internal_connect},
+  {"getpeername", internal_get_peer_name},
+  {"send", internal_send},
+  {"recv", internal_recv},
+  {"sendto", internal_send_to},
+  {"recvfrom", internal_recv_from},
+  {"sendmsg", internal_send_msg},
+  {"recvmsg", internal_recv_msg},
+  {"getsockopt", internal_get_sock_opt},
+  {"setsockopt", internal_set_sock_opt},
+  {"listen", internal_listen},
+  {"accept", internal_accept},
+  {"shutdown", internal_shutdown},
   {NULL, NULL}
 };
 

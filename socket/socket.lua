@@ -52,6 +52,47 @@ local function getSocketParams(domain, socketType, protocol)
     return getDomain(domain), socketType, protocol;
 end
 
+local function toStructParam(socket, sockaddr)
+    local socketAddressType = sockaddr.type;
+    local notSupported = true;
+    for _, v in ipairs(bindTypes) do
+        if v == socketAddressType then
+            notSupported = false;
+            break;
+        end
+    end
+    if notSupported then
+        error("socket address type " .. socketAddressType .. "is not supported!");
+    end
+
+    if sockaddr.type == "sockaddr" and type(sockaddr.sa_family) == "string" then
+        sockaddr.sa_family = getDomain(sockaddr.sa_family);
+    elseif sockaddr.type == "sockaddr_at" and type(sockaddr.sat_family) == "string" then
+        sockaddr.sat_family = getDomain(sockaddr.sat_family);
+    elseif sockaddr.type == "sockaddr_ax25" and type(sockaddr.sax25_family) == "string" then
+        sockaddr.sax25_family = getDomain(sockaddr.sax25_family);
+    elseif sockaddr.type == "sockaddr_dl" and type(sockaddr.sa_family) == "string" then
+        sockaddr.sa_family = getDomain(sockaddr.sa_family);
+    elseif sockaddr.type == "sockaddr_eon" and type(sockaddr.sa_family) == "string" then
+        sockaddr.sa_family = getDomain(sockaddr.sa_family);
+    elseif sockaddr.type == "sockaddr_in" and type(sockaddr.sin_family) == "string" then
+        sockaddr.sin_family = getDomain(sockaddr.sin_family);
+    elseif sockaddr.type == "sockaddr_in6" and type(sockaddr.sin6_family) == "string" then
+        sockaddr.sin6_family = getDomain(sockaddr.sin6_family);
+    elseif sockaddr.type == "sockaddr_inarp" and type(sockaddr.sa_family) == "string" then
+        sockaddr.sa_family = getDomain(sockaddr.sa_family);
+    elseif sockaddr.type == "sockaddr_ipx" and type(sockaddr.sipx_family) == "string" then
+        sockaddr.sipx_family = getDomain(sockaddr.sipx_family);
+    elseif sockaddr.type == "sockaddr_iso" and type(sockaddr.sa_family) == "string" then
+        sockaddr.sa_family = getDomain(sockaddr.sa_family);
+    elseif sockaddr.type == "sockaddr_ns" and type(sockaddr.sa_family) == "string" then
+        sockaddr.sa_family = getDomain(sockaddr.sa_family);
+    elseif sockaddr.type == "sockaddr_un" and type(sockaddr.sun_family) == "string" then
+        sockaddr.sun_family = getDomain(sockaddr.sun_family);
+    end
+    return socket, sockaddr;
+end
+
 return setmetatable({}, MetatableBuilder.new().immutable().index({
     socket = function(domain, socketType, protocol)
         return Internal.socket(getSocketParams(domain, socketType, protocol));
@@ -66,44 +107,7 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         end
     end,
     bind = function(socket, sockaddr)
-        local socketAddressType = sockaddr.type;
-        local notSupported = true;
-        for _, v in ipairs(bindTypes) do
-            if v == socketAddressType then
-                notSupported = false;
-                break;
-            end
-        end
-        if notSupported then
-            error("socket address type " .. socketAddressType .. "is not supported!");
-        end
-
-        if sockaddr.type == "sockaddr" and type(sockaddr.sa_family) == "string" then
-            sockaddr.sa_family = getDomain(sockaddr.sa_family);
-        elseif sockaddr.type == "sockaddr_at" and type(sockaddr.sat_family) == "string" then
-            sockaddr.sat_family = getDomain(sockaddr.sat_family);
-        elseif sockaddr.type == "sockaddr_ax25" and type(sockaddr.sax25_family) == "string" then
-            sockaddr.sax25_family = getDomain(sockaddr.sax25_family);
-        elseif sockaddr.type == "sockaddr_dl" and type(sockaddr.sa_family) == "string" then
-            sockaddr.sa_family = getDomain(sockaddr.sa_family);
-        elseif sockaddr.type == "sockaddr_eon" and type(sockaddr.sa_family) == "string" then
-            sockaddr.sa_family = getDomain(sockaddr.sa_family);
-        elseif sockaddr.type == "sockaddr_in" and type(sockaddr.sin_family) == "string" then
-            sockaddr.sin_family = getDomain(sockaddr.sin_family);
-        elseif sockaddr.type == "sockaddr_in6" and type(sockaddr.sin6_family) == "string" then
-            sockaddr.sin6_family = getDomain(sockaddr.sin6_family);
-        elseif sockaddr.type == "sockaddr_inarp" and type(sockaddr.sa_family) == "string" then
-            sockaddr.sa_family = getDomain(sockaddr.sa_family);
-        elseif sockaddr.type == "sockaddr_ipx" and type(sockaddr.sipx_family) == "string" then
-            sockaddr.sipx_family = getDomain(sockaddr.sipx_family);
-        elseif sockaddr.type == "sockaddr_iso" and type(sockaddr.sa_family) == "string" then
-            sockaddr.sa_family = getDomain(sockaddr.sa_family);
-        elseif sockaddr.type == "sockaddr_ns" and type(sockaddr.sa_family) == "string" then
-            sockaddr.sa_family = getDomain(sockaddr.sa_family);
-        elseif sockaddr.type == "sockaddr_un" and type(sockaddr.sun_family) == "string" then
-            sockaddr.sun_family = getDomain(sockaddr.sun_family);
-        end
-        Internal.bind(socket, sockaddr);
+        Internal.bind(toStructParam(socket, sockaddr));
     end,
     getsockname = function(socket, socketType, sockaddr)
         assert(type(socket) == "number", "socket is not a number!");
@@ -119,5 +123,8 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
             return length;
         end
         return address, length;
+    end,
+    connect = function(socket, sockaddr)
+        Internal.connect(toStructParam(socket, sockaddr));
     end
 }).build());
