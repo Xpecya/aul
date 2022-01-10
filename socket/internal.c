@@ -195,6 +195,9 @@ void internal_bind_sockaddr_in6(lua_State *L, struct sockaddr *address) {
         }
       }
     }
+  } else if (field_type == LUA_TSTRING) {
+    const char *ipv6_address = lua_tostring(L, 8);
+    inet_pton(AF_INET6, ipv6_address, &sockaddr_in6_t -> sin6_addr);
   }
 }
 
@@ -388,7 +391,7 @@ int internal_getsockname_sockaddr(lua_State *L, struct sockaddr *address, int le
 int internal_getsockname_sockaddr_in(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_in *sockaddr_in_t = (struct sockaddr_in*) address;
 
-  lua_createtable(L, 0, 2);
+  lua_createtable(L, 0, 3);
   lua_pushinteger(L, sockaddr_in_t -> sin_family);
   lua_setfield(L, 3, "sin_family");
   lua_pushinteger(L, ntohs(sockaddr_in_t -> sin_port));
@@ -422,7 +425,7 @@ int internal_getsockname_sockaddr_ns(lua_State *L, struct sockaddr *address, int
 int internal_getsockname_sockaddr_at(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_at *sockaddr_at_t = (struct sockaddr_at*) address;
 
-  lua_createtable(L, 0, 2);
+  lua_createtable(L, 0, 3);
   lua_pushinteger(L, sockaddr_at_t -> sat_family);
   lua_setfield(L, 3, "sat_family");
   lua_pushinteger(L, sockaddr_at_t -> sat_port);
@@ -440,6 +443,94 @@ int internal_getsockname_sockaddr_at(lua_State *L, struct sockaddr *address, int
 // just like internal_bind_sockaddr_dl
 // todo: finish this function
 int internal_getsockname_sockaddr_dl(lua_State *L, struct sockaddr *address, int length) {
+  struct sockaddr_ax25 *sockaddr_ax25_t = (struct sockaddr_ax25*) address;
+
+  lua_createtable(L, 0, 3);
+  lua_pushinteger(L, sockaddr_ax25_t -> sax25_family);
+  lua_setfield(L, 3, "sax25_family");
+  lua_pushinteger(L, sockaddr_ax25_t -> sax25_ndigis);
+  lua_setfield(L, 3, "sax25_ndigis");
+  lua_createtable(L, 0, 1);
+  lua_pushstring(L, sockaddr_ax25_t -> sax25_call.ax25_call);
+  lua_setfield(L, 4, "ax25_call");
+  lua_setfield(L, 3, "sax25_call");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
+int internal_getsockname_sockaddr_in6(lua_State *L, struct sockaddr *address, int length) {
+  struct sockaddr_in6 *sockaddr_in6_t = (struct sockaddr_in6*) address;
+
+  lua_createtable(L, 0, 5);
+  lua_pushinteger(L, sockaddr_in6_t -> sin6_family);
+  lua_setfield(L, 3, "sin6_family");
+  lua_pushinteger(L, sockaddr_in6_t -> sin6_port);
+  lua_setfield(L, 3, "sin6_port");
+  lua_pushinteger(L, sockaddr_in6_t -> sin6_flowinfo);
+  lua_setfield(L, 3, "sin6_flowinfo");
+  lua_pushinteger(L, sockaddr_in6_t -> sin6_scope_id);
+  lua_setfield(L, 3, "sin6_scope_id");
+  char ipv6_address[sizeof(sockaddr_in6_t -> sin6_addr)];
+  inet_ntop(AF_INET6, &sockaddr_in6_t -> sin6_addr, ipv6_address, sizeof(sockaddr_in6_t -> sin6_addr));
+  lua_pushstring(L, ipv6_address);
+  lua_setfield(L, 3, "sin6_addr");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
+int internal_getsockname_sockaddr_ipx(lua_State *L, struct sockaddr *address, int length) {
+  struct sockaddr_ipx *sockaddr_ipx_t = (struct sockaddr_ipx*) address;
+
+  lua_createtable(L, 0, 5);
+  lua_pushinteger(L, sockaddr_ipx_t -> sipx_family);
+  lua_setfield(L, 3, "sipx_family");
+  lua_pushinteger(L, sockaddr_ipx_t -> sipx_port);
+  lua_setfield(L, 3, "sipx_port");
+  lua_pushinteger(L, sockaddr_ipx_t -> sipx_network);
+  lua_setfield(L, 3, "sipx_network");
+  lua_pushinteger(L, sockaddr_ipx_t -> sipx_type);
+  lua_setfield(L, 3, "sipx_type");
+  lua_pushstring(L, sockaddr_ipx_t -> sipx_node);
+  lua_setfield(L, 3, "sipx_node");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
+// just like internal_bind_sockaddr_iso
+// todo: finish this function
+int internal_getsockname_sockaddr_iso(lua_State *L, struct sockaddr *address, int length) {
+  return internal_getsockname_sockaddr(L, address, length);
+}
+
+int internal_getsockname_sockaddr_x25(lua_State *L, struct sockaddr *address, int length) {
+  struct sockaddr_x25 *sockaddr_x25_t = (struct sockaddr_x25*) address;
+
+  lua_createtable(L, 0, 2);
+  lua_pushinteger(L, sockaddr_x25_t -> sx25_family);
+  lua_setfield(L, 3, "sx25_family");
+  lua_createtable(L, 0, 1);
+  lua_pushstring(L, sockaddr_x25_t -> sx25_addr.x25_addr);
+  lua_setfield(L, 4, "x25_addr");
+  lua_setfield(L, 3, "sx25_addr");
+  lua_pushinteger(L, length);
+  return 2;
+}
+
+// just like internal_bind_sockaddr_eon
+// todo: finish this function
+int internal_getsockname_sockaddr_eon(lua_State *L, struct sockaddr *address, int length) {
+  return internal_getsockname_sockaddr(L, address, length);
+}
+
+// just like internal_bind_sockaddr_eon
+// todo: finish this function
+int internal_getsockname_sockaddr_ax25(lua_State *L, struct sockaddr *address, int length) {
+  return internal_getsockname_sockaddr(L, address, length);
+}
+
+// just like internal_bind_sockaddr_inarp
+// todo: finish this function
+int internal_getsockname_sockaddr_inarp(lua_State *L, struct sockaddr *address, int length) {
   return internal_getsockname_sockaddr(L, address, length);
 }
 
@@ -478,30 +569,28 @@ int internal_get_socket_name(lua_State *L) {
       }
       return internal_getsockname_sockaddr_dl(L, &address, length);
     }
-//    case 12: {
-//      if (strcmp("sockaddr_in6", type) == 0) {
-//        internal_bind_sockaddr_in6(L, &address);
-//      } else if (strcmp("sockaddr_ipx", type) == 0) {
-//        internal_bind_sockaddr_ipx(L, &address);
-//      } else if (strcmp("sockaddr_iso", type) == 0) {
-//        internal_bind_sockaddr_iso(L, &address);
-//      } else if (strcmp("sockaddr_x25", type) == 0) {
-//        internal_bind_sockaddr_x25(L, &address);
-//      } else {
-//        internal_bind_sockaddr_eon(L, &address);
-//      }
-//      break;
-//    }
-//    case 13: {
-//      internal_bind_sockaddr_ax25(L, &address);
-//      break;
-//    }
-//    case 14: {
-//      internal_bind_sockaddr_inarp(L, &address);
-//      break;
-//    }
+    case 12: {
+      if (strcmp("sockaddr_in6", socket_type) == 0) {
+        return internal_getsockname_sockaddr_in6(L, &address, length);
+      }
+      if (strcmp("sockaddr_ipx", socket_type) == 0) {
+        return internal_getsockname_sockaddr_ipx(L, &address, length);
+      }
+      if (strcmp("sockaddr_iso", socket_type) == 0) {
+        return internal_getsockname_sockaddr_iso(L, &address, length);
+      }
+      if (strcmp("sockaddr_x25", socket_type) == 0) {
+        return internal_getsockname_sockaddr_x25(L, &address, length);
+      }
+      return internal_getsockname_sockaddr_eon(L, &address, length);
+    }
+    case 13: {
+      return internal_getsockname_sockaddr_ax25(L, &address, length);
+    }
+    case 14: {
+      return internal_getsockname_sockaddr_inarp(L, &address, length);
+    }
   }
-  return 0;
 }
 
 static const luaL_Reg register_function[] = {
