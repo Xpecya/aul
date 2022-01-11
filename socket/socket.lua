@@ -24,6 +24,31 @@ local bindTypes = {
     "sockaddr_x25"
 };
 
+local flagEnum = {
+    MSG_OOB = 0x01,
+    MSG_PEEK = 0x02,
+    MSG_DONTROUTE = 0x04,
+    MSG_TRYHARD	= 0x04,
+    MSG_CTRUNC = 0x08,
+    MSG_PROXY = 0x10,
+    MSG_TRUNC = 0x20,
+    MSG_DONTWAIT = 0x40,
+    MSG_EOR	= 0x80,
+    MSG_WAITALL	= 0x100,
+    MSG_FIN	= 0x200,
+    MSG_SYN	= 0x400,
+    MSG_CONFIRM	= 0x800,
+    MSG_RST	= 0x1000,
+    MSG_ERRQUEUE = 0x2000,
+    MSG_NOSIGNAL = 0x4000,
+    MSG_MORE = 0x8000,
+    MSG_WAITFORONE = 0x10000,
+    MSG_BATCH = 0x40000,
+    MSG_ZEROCOPY = 0x4000000,
+    MSG_FASTOPEN = 0x20000000,
+    MSG_CMSG_CLOEXEC = 0x40000000
+};
+
 local function getDomain(domain)
     assert(domain ~= nil, "domain is nil!");
     if type(domain) == "string" then
@@ -94,34 +119,11 @@ local function toStructParam(socket, sockaddr)
 end
 
 local function flag2Number(flagString)
-    local flagEnum = {
-        MSG_OOB = 0x01,
-        MSG_PEEK = 0x02,
-        MSG_DONTROUTE = 0x04,
-        MSG_TRYHARD	= 0x04,
-        MSG_CTRUNC = 0x08,
-        MSG_PROXY = 0x10,
-        MSG_TRUNC = 0x20,
-        MSG_DONTWAIT = 0x40,
-        MSG_EOR	= 0x80,
-        MSG_WAITALL	= 0x100,
-        MSG_FIN	= 0x200,
-        MSG_SYN	= 0x400,
-        MSG_CONFIRM	= 0x800,
-        MSG_RST	= 0x1000,
-        MSG_ERRQUEUE = 0x2000,
-        MSG_NOSIGNAL = 0x4000,
-        MSG_MORE = 0x8000,
-        MSG_WAITFORONE = 0x10000,
-        MSG_BATCH = 0x40000,
-        MSG_ZEROCOPY = 0x4000000,
-        MSG_FASTOPEN = 0x20000000,
-        MSG_CMSG_CLOEXEC = 0x40000000
-    };
     local result = flagEnum[flagString];
     if result == nil then
         error("unknown flag type " .. flagString);
     end
+    return result;
 end
 
 local function getFlags(flags, acceptTable)
@@ -202,5 +204,11 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         assert(type(length) == "number", "length is not a number!");
         flags = getFlags(flags, true);
         return Internal.recv(socket, length, flags);
+    end,
+    sendto = function(socket, data, flags, target)
+        assert(type(data) == "string", "send data is not a string!");
+        flags = getFlags(flags, true);
+        socket, target = toStructParam(socket, target);
+        return Internal.sendto(socket, target, data, flags);
     end
 }).build());
