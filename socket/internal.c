@@ -652,7 +652,27 @@ int internal_get_peer_name(lua_State *L) {
 
 // send data
 int internal_send(lua_State *L) {
-  return 0;
+  int socket = lua_tointeger(L, 1);
+  const char *data = lua_tostring(L, 2);
+
+  int flags = 0;
+  int flags_type = lua_type(L, 3);
+  if (flags_type == LUA_TNUMBER) {
+    flags = lua_tointeger(L, 3);
+  } else if (flags_type == LUA_TTABLE) {
+    lua_len(L, 3);
+    int length = lua_tointeger(L, 4);
+    printf("debug: table length = %d\r\n", length);
+    int count = 4;
+    for (int i = 1; i <= length; i ++) {
+      lua_geti(L, 3, i);
+      flags = flags | lua_tointeger(L, ++count);
+    }
+  }
+  printf("debug: flags = %d\r\n", flags);
+  ssize_t send_result = send(socket, data, sizeof(data), flags);
+  lua_pushinteger(L, send_result);
+  return 1;
 }
 
 // receive data
