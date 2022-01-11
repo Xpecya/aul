@@ -395,7 +395,7 @@ int internal_bind(lua_State *L) {
   return 0;
 }
 
-int internal_getsockname_sockaddr(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr(lua_State *L, struct sockaddr *address, int length) {
   lua_createtable(L, 0, 2);
   lua_pushinteger(L, address -> sa_family);
   lua_setfield(L, 3, "sa_family");
@@ -405,7 +405,7 @@ int internal_getsockname_sockaddr(lua_State *L, struct sockaddr *address, int le
   return 2;
 }
 
-int internal_getsockname_sockaddr_in(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_in(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_in *sockaddr_in_t = (struct sockaddr_in*) address;
 
   lua_createtable(L, 0, 3);
@@ -421,7 +421,7 @@ int internal_getsockname_sockaddr_in(lua_State *L, struct sockaddr *address, int
   return 2;
 }
 
-int internal_getsockname_sockaddr_un(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_un(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_un *sockaddr_un_t = (struct sockaddr_un*) address;
 
   lua_createtable(L, 0, 2);
@@ -435,11 +435,11 @@ int internal_getsockname_sockaddr_un(lua_State *L, struct sockaddr *address, int
 
 // just like internal_bind_sockaddr_ns
 // todo: finish this function
-int internal_getsockname_sockaddr_ns(lua_State *L, struct sockaddr *address, int length) {
-  return internal_getsockname_sockaddr(L, address, length);
+int internal_to_table_sockaddr_ns(lua_State *L, struct sockaddr *address, int length) {
+  return internal_to_table_sockaddr(L, address, length);
 }
 
-int internal_getsockname_sockaddr_at(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_at(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_at *sockaddr_at_t = (struct sockaddr_at*) address;
 
   lua_createtable(L, 0, 3);
@@ -459,7 +459,7 @@ int internal_getsockname_sockaddr_at(lua_State *L, struct sockaddr *address, int
 
 // just like internal_bind_sockaddr_dl
 // todo: finish this function
-int internal_getsockname_sockaddr_dl(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_dl(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_ax25 *sockaddr_ax25_t = (struct sockaddr_ax25*) address;
 
   lua_createtable(L, 0, 3);
@@ -475,7 +475,7 @@ int internal_getsockname_sockaddr_dl(lua_State *L, struct sockaddr *address, int
   return 2;
 }
 
-int internal_getsockname_sockaddr_in6(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_in6(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_in6 *sockaddr_in6_t = (struct sockaddr_in6*) address;
 
   lua_createtable(L, 0, 5);
@@ -495,7 +495,7 @@ int internal_getsockname_sockaddr_in6(lua_State *L, struct sockaddr *address, in
   return 2;
 }
 
-int internal_getsockname_sockaddr_ipx(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_ipx(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_ipx *sockaddr_ipx_t = (struct sockaddr_ipx*) address;
 
   lua_createtable(L, 0, 5);
@@ -515,11 +515,11 @@ int internal_getsockname_sockaddr_ipx(lua_State *L, struct sockaddr *address, in
 
 // just like internal_bind_sockaddr_iso
 // todo: finish this function
-int internal_getsockname_sockaddr_iso(lua_State *L, struct sockaddr *address, int length) {
-  return internal_getsockname_sockaddr(L, address, length);
+int internal_to_table_sockaddr_iso(lua_State *L, struct sockaddr *address, int length) {
+  return internal_to_table_sockaddr(L, address, length);
 }
 
-int internal_getsockname_sockaddr_x25(lua_State *L, struct sockaddr *address, int length) {
+int internal_to_table_sockaddr_x25(lua_State *L, struct sockaddr *address, int length) {
   struct sockaddr_x25 *sockaddr_x25_t = (struct sockaddr_x25*) address;
 
   lua_createtable(L, 0, 2);
@@ -535,20 +535,65 @@ int internal_getsockname_sockaddr_x25(lua_State *L, struct sockaddr *address, in
 
 // just like internal_bind_sockaddr_eon
 // todo: finish this function
-int internal_getsockname_sockaddr_eon(lua_State *L, struct sockaddr *address, int length) {
-  return internal_getsockname_sockaddr(L, address, length);
+int internal_to_table_sockaddr_eon(lua_State *L, struct sockaddr *address, int length) {
+  return internal_to_table_sockaddr(L, address, length);
 }
 
 // just like internal_bind_sockaddr_eon
 // todo: finish this function
-int internal_getsockname_sockaddr_ax25(lua_State *L, struct sockaddr *address, int length) {
-  return internal_getsockname_sockaddr(L, address, length);
+int internal_to_table_sockaddr_ax25(lua_State *L, struct sockaddr *address, int length) {
+  return internal_to_table_sockaddr(L, address, length);
 }
 
 // just like internal_bind_sockaddr_inarp
 // todo: finish this function
-int internal_getsockname_sockaddr_inarp(lua_State *L, struct sockaddr *address, int length) {
-  return internal_getsockname_sockaddr(L, address, length);
+int internal_to_table_sockaddr_inarp(lua_State *L, struct sockaddr *address, int length) {
+  return internal_to_table_sockaddr(L, address, length);
+}
+
+int internal_to_table(lua_State *L, struct sockaddr* address, socklen_t length) {
+  const char *socket_type = lua_tostring(L, 2);
+  switch (strlen(socket_type)) {
+    case 8: {
+      return internal_to_table_sockaddr(L, address, length);
+    }
+    case 11: {
+      if (strcmp("sockaddr_in", socket_type) == 0) {
+        return internal_to_table_sockaddr_in(L, address, length);
+      }
+      if (strcmp("sockaddr_un", socket_type) == 0) {
+        return internal_to_table_sockaddr_un(L, address, length);
+      }
+      if (strcmp("sockaddr_ns", socket_type) == 0) {
+        return internal_to_table_sockaddr_ns(L, address, length);
+      }
+      if (strcmp("sockaddr_at", socket_type) == 0) {
+        return internal_to_table_sockaddr_at(L, address, length);
+      }
+      return internal_to_table_sockaddr_dl(L, address, length);
+    }
+    case 12: {
+      if (strcmp("sockaddr_in6", socket_type) == 0) {
+        return internal_to_table_sockaddr_in6(L, address, length);
+      }
+      if (strcmp("sockaddr_ipx", socket_type) == 0) {
+        return internal_to_table_sockaddr_ipx(L, address, length);
+      }
+      if (strcmp("sockaddr_iso", socket_type) == 0) {
+        return internal_to_table_sockaddr_iso(L, address, length);
+      }
+      if (strcmp("sockaddr_x25", socket_type) == 0) {
+        return internal_to_table_sockaddr_x25(L, address, length);
+      }
+      return internal_to_table_sockaddr_eon(L, address, length);
+    }
+    case 13: {
+      return internal_to_table_sockaddr_ax25(L, address, length);
+    }
+    case 14: {
+      return internal_to_table_sockaddr_inarp(L, address, length);
+    }
+  }
 }
 
 int internal_get_socket_name(lua_State *L) {
@@ -565,49 +610,7 @@ int internal_get_socket_name(lua_State *L) {
     luaL_error(L, text);
     return 0;
   }
-
-  const char *socket_type = lua_tostring(L, 2);
-  switch (strlen(socket_type)) {
-    case 8: {
-      return internal_getsockname_sockaddr(L, &address, length);
-    }
-    case 11: {
-      if (strcmp("sockaddr_in", socket_type) == 0) {
-        return internal_getsockname_sockaddr_in(L, &address, length);
-      }
-      if (strcmp("sockaddr_un", socket_type) == 0) {
-        return internal_getsockname_sockaddr_un(L, &address, length);
-      }
-      if (strcmp("sockaddr_ns", socket_type) == 0) {
-        return internal_getsockname_sockaddr_ns(L, &address, length);
-      }
-      if (strcmp("sockaddr_at", socket_type) == 0) {
-        return internal_getsockname_sockaddr_at(L, &address, length);
-      }
-      return internal_getsockname_sockaddr_dl(L, &address, length);
-    }
-    case 12: {
-      if (strcmp("sockaddr_in6", socket_type) == 0) {
-        return internal_getsockname_sockaddr_in6(L, &address, length);
-      }
-      if (strcmp("sockaddr_ipx", socket_type) == 0) {
-        return internal_getsockname_sockaddr_ipx(L, &address, length);
-      }
-      if (strcmp("sockaddr_iso", socket_type) == 0) {
-        return internal_getsockname_sockaddr_iso(L, &address, length);
-      }
-      if (strcmp("sockaddr_x25", socket_type) == 0) {
-        return internal_getsockname_sockaddr_x25(L, &address, length);
-      }
-      return internal_getsockname_sockaddr_eon(L, &address, length);
-    }
-    case 13: {
-      return internal_getsockname_sockaddr_ax25(L, &address, length);
-    }
-    case 14: {
-      return internal_getsockname_sockaddr_inarp(L, &address, length);
-    }
-  }
+  return internal_to_table(L, &address, length);
 }
 
 // open a connection
@@ -631,7 +634,20 @@ int internal_connect(lua_State *L) {
 
 // get peer name
 int internal_get_peer_name(lua_State *L) {
-  return 0;
+  int socket = lua_tointeger(L, 1);
+  struct sockaddr address;
+  memset(&address, 0, sizeof(address));
+  socklen_t length;
+
+  errno = 0;
+  int result = getpeername(socket, &address, &length);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+    return 0;
+  }
+  return internal_to_table(L, &address, length);
 }
 
 // send data

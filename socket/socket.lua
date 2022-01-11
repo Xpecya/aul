@@ -126,5 +126,20 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
     end,
     connect = function(socket, sockaddr)
         Internal.connect(toStructParam(socket, sockaddr));
+    end,
+    getpeername = function(socket, socketType, sockaddr)
+        assert(type(socket) == "number", "socket is not a number!");
+        if type(socketType) ~= "string" then
+            socketType = "sockaddr";
+        end
+
+        local address, length = Internal.getpeername(socket, socketType);
+        if type(sockaddr) == "table" then
+            for i, v in pairs(address) do
+                sockaddr[i] = v;
+            end
+            return length;
+        end
+        return address, length;
     end
 }).build());
