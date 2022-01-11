@@ -677,7 +677,28 @@ int internal_send(lua_State *L) {
 
 // receive data
 int internal_recv(lua_State *L) {
-  return 0;
+  int socket = lua_tointeger(L, 1);
+  int length = lua_tointeger(L, 2);
+  char *data[length];
+
+  int flags = 0;
+  int flags_type = lua_type(L, 3);
+  if (flags_type == LUA_TNUMBER) {
+    flags = lua_tointeger(L, 3);
+  } else if (flags_type == LUA_TTABLE) {
+    lua_len(L, 3);
+    int length = lua_tointeger(L, 4);
+    printf("debug: table length = %d\r\n", length);
+    int count = 4;
+    for (int i = 1; i <= length; i ++) {
+      lua_geti(L, 3, i);
+      flags = flags | lua_tointeger(L, ++count);
+    }
+  }
+  printf("debug: flags = %d\r\n", flags);
+  recv(socket, data, length, flags);
+  lua_pushstring(L, data);
+  return 1;
 }
 
 // send to

@@ -196,5 +196,11 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         assert(type(data) == "string", "send data is not a string!");
         flags = getFlags(flags, true);
         return Internal.send(socket, data, flags);
+    end,
+    recv = function(socket, length, flags)
+        assert(type(socket) == "number", "socket is not a number!");
+        assert(type(length) == "number", "length is not a number!");
+        flags = getFlags(flags, true);
+        return Internal.recv(socket, length, flags);
     end
 }).build());
