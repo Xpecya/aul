@@ -664,14 +664,12 @@ int internal_send(lua_State *L) {
   } else if (flags_type == LUA_TTABLE) {
     lua_len(L, 3);
     int length = lua_tointeger(L, 4);
-    printf("debug: table length = %d\r\n", length);
     int count = 4;
     for (int i = 1; i <= length; i ++) {
       lua_geti(L, 3, i);
       flags = flags | lua_tointeger(L, ++count);
     }
   }
-  printf("debug: flags = %d\r\n", flags);
   ssize_t send_result = send(socket, data, strlen(data), flags);
   lua_pushinteger(L, send_result);
   return 1;
@@ -685,13 +683,11 @@ int get_flags(lua_State *L, int index) {
   } else if (flags_type == LUA_TTABLE) {
     lua_len(L, index);
     int length = lua_tointeger(L, ++index);
-    printf("debug: table length = %d\r\n", length);
     for (int i = 1; i <= length; i ++) {
       lua_geti(L, 3, i);
       flags = flags | lua_tointeger(L, ++index);
     }
   }
-  printf("debug: flags = %d\r\n", flags);
   return flags;
 }
 
@@ -700,6 +696,7 @@ int internal_recv(lua_State *L) {
   int socket = lua_tointeger(L, 1);
   int length = lua_tointeger(L, 2);
   char data[length];
+  memset(data, 0, length);
 
   int flags = get_flags(L, 3);
   recv(socket, data, length, flags);
