@@ -215,5 +215,9 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         assert(type(socket) == "number", "socket is not a number!");
         assert(type(number) == "number", "queue size is not a number!");
         Internal.listen(socket, number);
+    end,
+    accept = function(socket)
+        assert(type(socket) == "number", "socket is not a number!");
+        return Internal.accept(socket);
     end
 }).build());

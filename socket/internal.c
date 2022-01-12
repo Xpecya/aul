@@ -672,7 +672,7 @@ int internal_send(lua_State *L) {
     }
   }
   printf("debug: flags = %d\r\n", flags);
-  ssize_t send_result = send(socket, data, sizeof(data), flags);
+  ssize_t send_result = send(socket, data, strlen(data), flags);
   lua_pushinteger(L, send_result);
   return 1;
 }
@@ -770,7 +770,19 @@ int internal_listen(lua_State *L) {
 
 // accept from a socket
 int internal_accept(lua_State *L) {
-  return 0;
+  int socket = lua_tointeger(L, 1);
+  struct sockaddr client_address;
+  socklen_t client_address_length = sizeof(client_address);
+  memset(&client_address, 0, client_address_length);
+  errno = 0;
+  int result = accept(socket, &client_address, &client_address_length);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+  }
+  lua_pushinteger(L, result);
+  return 1;
 }
 
 // shutdown a socket
