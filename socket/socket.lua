@@ -210,5 +210,10 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         flags = getFlags(flags, true);
         socket, target = toStructParam(socket, target);
         return Internal.sendto(socket, target, data, flags);
+    end,
+    listen = function(socket, number)
+        assert(type(socket) == "number", "socket is not a number!");
+        assert(type(number) == "number", "queue size is not a number!");
+        Internal.listen(socket, number);
     end
 }).build());

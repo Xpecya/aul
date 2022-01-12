@@ -756,6 +756,15 @@ int internal_set_sock_opt(lua_State *L) {
 
 // listen to a socket
 int internal_listen(lua_State *L) {
+  int socket = lua_tointeger(L, 1);
+  int size = lua_tointeger(L, 2);
+  errno = 0;
+  int result = listen(socket, size);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+  }
   return 0;
 }
 
