@@ -152,6 +152,48 @@ local addressFamily = {
     AF_MAX = protocolFamily.PF_MAX
 };
 
+-- defined in sys/socket.h __SOCKADDR_ALLTYPES
+local bindTypes = {
+    "sockaddr",
+    "sockaddr_at",
+    "sockaddr_ax25",
+    "sockaddr_dl",
+    "sockaddr_eon",
+    "sockaddr_in",
+    "sockaddr_in6",
+    "sockaddr_inarp",
+    "sockaddr_ipx",
+    "sockaddr_iso",
+    "sockaddr_ns",
+    "sockaddr_un",
+    "sockaddr_x25"
+};
+
+local flagEnum = {
+    MSG_OOB = 0x01,
+    MSG_PEEK = 0x02,
+    MSG_DONTROUTE = 0x04,
+    MSG_TRYHARD	= 0x04,
+    MSG_CTRUNC = 0x08,
+    MSG_PROXY = 0x10,
+    MSG_TRUNC = 0x20,
+    MSG_DONTWAIT = 0x40,
+    MSG_EOR	= 0x80,
+    MSG_WAITALL	= 0x100,
+    MSG_FIN	= 0x200,
+    MSG_SYN	= 0x400,
+    MSG_CONFIRM	= 0x800,
+    MSG_RST	= 0x1000,
+    MSG_ERRQUEUE = 0x2000,
+    MSG_NOSIGNAL = 0x4000,
+    MSG_MORE = 0x8000,
+    MSG_WAITFORONE = 0x10000,
+    MSG_BATCH = 0x40000,
+    MSG_ZEROCOPY = 0x4000000,
+    MSG_FASTOPEN = 0x20000000,
+    MSG_CMSG_CLOEXEC = 0x40000000
+};
+
 -- in order not to add anything in the global
 local protocolFamilyLocal = protocolFamily;
 protocolFamily = nil;
@@ -179,5 +221,21 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         local result = ipProtocol[protocolName];
         assert(result ~= nil, "cannot find the ip protocol specified with name " .. protocolName);
         return result;
+    end,
+    bindTypeCheck = function(sockaddr)
+        local socketAddressType = sockaddr.type;
+        local notSupported = true;
+        for _, v in ipairs(bindTypes) do
+            if v == socketAddressType then
+                notSupported = false;
+                break;
+            end
+        end
+        if notSupported then
+            error("socket address type " .. socketAddressType .. "is not supported!");
+        end
+    end,
+    getFlag = function(flagName)
+        return flagEnum[flagName];
     end
 }).build());

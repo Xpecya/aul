@@ -7,48 +7,6 @@ local MetatableBuilder = require "aul.metatableBuilder.MetatableBuilder";
 local define = require "aul.socket.define";
 local Internal = require "aul.socket.internal";
 
--- defined in sys/socket.h __SOCKADDR_ALLTYPES
-local bindTypes = {
-    "sockaddr",
-    "sockaddr_at",
-    "sockaddr_ax25",
-    "sockaddr_dl",
-    "sockaddr_eon",
-    "sockaddr_in",
-    "sockaddr_in6",
-    "sockaddr_inarp",
-    "sockaddr_ipx",
-    "sockaddr_iso",
-    "sockaddr_ns",
-    "sockaddr_un",
-    "sockaddr_x25"
-};
-
-local flagEnum = {
-    MSG_OOB = 0x01,
-    MSG_PEEK = 0x02,
-    MSG_DONTROUTE = 0x04,
-    MSG_TRYHARD	= 0x04,
-    MSG_CTRUNC = 0x08,
-    MSG_PROXY = 0x10,
-    MSG_TRUNC = 0x20,
-    MSG_DONTWAIT = 0x40,
-    MSG_EOR	= 0x80,
-    MSG_WAITALL	= 0x100,
-    MSG_FIN	= 0x200,
-    MSG_SYN	= 0x400,
-    MSG_CONFIRM	= 0x800,
-    MSG_RST	= 0x1000,
-    MSG_ERRQUEUE = 0x2000,
-    MSG_NOSIGNAL = 0x4000,
-    MSG_MORE = 0x8000,
-    MSG_WAITFORONE = 0x10000,
-    MSG_BATCH = 0x40000,
-    MSG_ZEROCOPY = 0x4000000,
-    MSG_FASTOPEN = 0x20000000,
-    MSG_CMSG_CLOEXEC = 0x40000000
-};
-
 local function getDomain(domain)
     assert(domain ~= nil, "domain is nil!");
     if type(domain) == "string" then
@@ -78,18 +36,7 @@ local function getSocketParams(domain, socketType, protocol)
 end
 
 local function toStructParam(socket, sockaddr)
-    local socketAddressType = sockaddr.type;
-    local notSupported = true;
-    for _, v in ipairs(bindTypes) do
-        if v == socketAddressType then
-            notSupported = false;
-            break;
-        end
-    end
-    if notSupported then
-        error("socket address type " .. socketAddressType .. "is not supported!");
-    end
-
+    define.bindTypeCheck(sockaddr);
     if sockaddr.type == "sockaddr" and type(sockaddr.sa_family) == "string" then
         sockaddr.sa_family = getDomain(sockaddr.sa_family);
     elseif sockaddr.type == "sockaddr_at" and type(sockaddr.sat_family) == "string" then
@@ -119,7 +66,7 @@ local function toStructParam(socket, sockaddr)
 end
 
 local function flag2Number(flagString)
-    local result = flagEnum[flagString];
+    local result = define.getFlag(flagString);
     if result == nil then
         error("unknown flag type " .. flagString);
     end
