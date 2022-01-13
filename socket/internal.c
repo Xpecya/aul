@@ -784,6 +784,16 @@ int internal_accept(lua_State *L) {
 
 // shutdown a socket
 int internal_shutdown(lua_State *L) {
+  int socket = lua_tointeger(L, 1);
+  int how = lua_tointeger(L, 2);
+
+  errno = 0;
+  int result = shutdown(socket, how);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+  }
   return 0;
 }
 

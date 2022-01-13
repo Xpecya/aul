@@ -166,5 +166,15 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
     accept = function(socket)
         assert(type(socket) == "number", "socket is not a number!");
         return Internal.accept(socket);
+    end,
+    shutdown = function(socket, how)
+        assert(type(socket) == "number", "socket is not a number!");
+        local howType = type(how);
+        if howType == "string" then
+            how = define.getShutdown(how);
+        elseif howType ~= "number" then
+            error("how can only be number or string!");
+        end
+        Internal.shutdown(socket, how);
     end
 }).build());

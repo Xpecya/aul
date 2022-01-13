@@ -194,6 +194,12 @@ local flagEnum = {
     MSG_CMSG_CLOEXEC = 0x40000000
 };
 
+local shutdown = {
+    SHUT_RD = 0, -- No more receptions.
+    SHUT_WR = 1, -- No more transmissions.
+    SHUT_RDWR = 2 -- No more receptions or transmissions.
+};
+
 -- in order not to add anything in the global
 local protocolFamilyLocal = protocolFamily;
 protocolFamily = nil;
@@ -237,5 +243,8 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
     end,
     getFlag = function(flagName)
         return flagEnum[flagName];
+    end,
+    getShutdown = function(name)
+        return shutdown[name];
     end
 }).build());
