@@ -154,9 +154,15 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
     end,
     sendto = function(socket, data, flags, target)
         assert(type(data) == "string", "send data is not a string!");
-        flags = getFlags(flags, true);
         socket, target = toStructParam(socket, target);
+        flags = getFlags(flags, true);
         return Internal.sendto(socket, target, data, flags);
+    end,
+    recvfrom = function(socket, length, flags, target)
+        assert(type(length) == "number", "receive length is not a number!");
+        socket, target = toStructParam(socket, target);
+        flags = getFlags(flags, true);
+        return Internal.recvfrom(socket, target, length, flags);
     end,
     listen = function(socket, number)
         assert(type(socket) == "number", "socket is not a number!");

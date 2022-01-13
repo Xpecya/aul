@@ -728,7 +728,26 @@ int internal_send_to(lua_State *L) {
 
 // receive from
 int internal_recv_from(lua_State *L) {
-  return 0;
+  struct internal_addr addr_t;
+  memset(&addr_t, 0, sizeof(addr_t));
+  int result = internal_to_addr(L, &addr_t, 4);
+  if (result == -1) {
+    return 0;
+  }
+  int length = lua_tointeger(L, 3);
+  char data[length];
+  memset(data, 0, length);
+  int flags = get_flags(L, 4);
+
+  errno = 0;
+  result = recvfrom(addr_t.socket, data, length, flags, &addr_t.address, sizeof(addr_t.address));
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+  }
+  lua_pushstring(L, data);
+  return 1;
 }
 
 // send message
