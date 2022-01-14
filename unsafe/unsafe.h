@@ -77,4 +77,4 @@ int unsafe_create_new_state(lua_State *L);
 int unsafe_do_file(lua_State *L);
 
 // open api
-int luaopen_aul_unsafe_unsafe_internal(lua_State *L);
+int luaopen_aul_unsafe_internal(lua_State *L);
