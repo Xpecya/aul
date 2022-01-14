@@ -182,5 +182,33 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
             error("how can only be number or string!");
         end
         Internal.shutdown(socket, how);
+    end,
+    getsockopt = function(socket, level, name, resultType, sockaddr)
+        assert(type(socket) == "number", "socket is not a number!");
+        assert(type(resultType) == "string", "result type must be a string!");
+        local levelType = type(level);
+        if levelType == "string" then
+            if level == "SOL_SOCKET" then
+                level = 1;
+            else
+                level = define.getProtocol(level);
+            end
+        elseif levelType ~= "number" then
+            error("level must be either string or number!");
+        end
+        local nameType = type(name);
+        if nameType == "string" then
+            name = define.getSocketOptionName(nameType);
+        elseif nameType ~= "number" then
+            error("socket option name must be either string or number!");
+        end
+        local resultAddress, length =  Internal.getsockopt(socket, resultType, level, name);
+        if type(sockaddr) == "table" then
+            for i, v in pairs(resultAddress) do
+                sockaddr[i] = v;
+            end
+            return length;
+        end
+        return resultAddress, length;
     end
 }).build());

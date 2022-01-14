@@ -721,6 +721,7 @@ int internal_send_to(lua_State *L) {
     char text[1024];
     sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
     luaL_error(L, text);
+    return 0;
   }
   lua_pushinteger(L, result);
   return 1;
@@ -738,13 +739,15 @@ int internal_recv_from(lua_State *L) {
   char data[length];
   memset(data, 0, length);
   int flags = get_flags(L, 4);
+  socklen_t addr_len = sizeof(addr_t.address);
 
   errno = 0;
-  result = recvfrom(addr_t.socket, data, length, flags, &addr_t.address, sizeof(addr_t.address));
+  result = recvfrom(addr_t.socket, data, length, flags, &addr_t.address, &addr_len);
   if (result == -1) {
     char text[1024];
     sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
     luaL_error(L, text);
+    return 0;
   }
   lua_pushstring(L, data);
   return 1;
@@ -762,7 +765,23 @@ int internal_recv_msg(lua_State *L) {
 
 // get socket option
 int internal_get_sock_opt(lua_State *L) {
-  return 0;
+  int socket = lua_tointeger(L, 1);
+  int level = lua_tointeger(L, 3);
+  int name = lua_tointeger(L, 4);
+
+  struct sockaddr result_addr;
+  socklen_t result_length = sizeof(result_addr);
+  memset(&result_addr, 0, result_length);
+
+  errno = 0;
+  int result = getsockopt(socket, level, name, &result_addr, &result_length);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+    return 0;
+  }
+  return internal_to_table(L, &result_addr, result_length);
 }
 
 // set socket option

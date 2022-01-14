@@ -200,6 +200,32 @@ local shutdown = {
     SHUT_RDWR = 2 -- No more receptions or transmissions.
 };
 
+local socketOptionName = {
+    SO_DEBUG = 1,
+    SO_REUSEADDR = 2,
+    SO_TYPE = 3,
+    SO_ERROR = 4,
+    SO_DONTROUTE = 5,
+    SO_BROADCAST = 6,
+    SO_SNDBUF = 7,
+    SO_RCVBUF = 8,
+    SO_KEEPALIVE = 9,
+    SO_OOBINLINE = 10,
+    SO_NO_CHECK = 11,
+    SO_PRIORITY = 12,
+    SO_LINGER = 13,
+    SO_BSDCOMPAT = 14,
+    SO_REUSEPORT = 15,
+    SO_PASSCRED	= 16,
+    SO_PEERCRED	= 17,
+    SO_RCVLOWAT	= 18,
+    SO_SNDLOWAT	= 19,
+    SO_RCVTIMEO_OLD	= 20,
+    SO_SNDTIMEO_OLD	= 21,
+    SO_SNDBUFFORCE = 32,
+    SO_RCVBUFFORCE = 33
+};
+
 -- in order not to add anything in the global
 local protocolFamilyLocal = protocolFamily;
 protocolFamily = nil;
@@ -242,9 +268,24 @@ return setmetatable({}, MetatableBuilder.new().immutable().index({
         end
     end,
     getFlag = function(flagName)
-        return flagEnum[flagName];
+        local result = flagEnum[flagName];
+        if result == nil then
+            error("cannot find flag type with name " .. flagName);
+        end
+        return result;
     end,
     getShutdown = function(name)
-        return shutdown[name];
+        local result = shutdown[name];
+        if result == nil then
+            error("cannot find shutdown type with name " .. name);
+        end
+        return result;
+    end,
+    getSocketOptionName = function(nameString)
+        local result = socketOptionName[nameString];
+        if result == nil then
+            error("cannot find socket option name number with name " .. nameString);
+        end
+        return result;
     end
 }).build());
