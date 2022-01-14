@@ -768,13 +768,13 @@ int internal_get_sock_opt(lua_State *L) {
   int socket = lua_tointeger(L, 1);
   int level = lua_tointeger(L, 3);
   int name = lua_tointeger(L, 4);
+  int length = lua_tointeger(L, 5);
 
   struct sockaddr result_addr;
-  socklen_t result_length = sizeof(result_addr);
-  memset(&result_addr, 0, result_length);
+  memset(&result_addr, 0, sizeof(result_addr));
 
   errno = 0;
-  int result = getsockopt(socket, level, name, &result_addr, &result_length);
+  int result = getsockopt(socket, level, name, &result_addr, &length);
   if (result == -1) {
     char text[1024];
     sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
@@ -786,6 +786,26 @@ int internal_get_sock_opt(lua_State *L) {
 
 // set socket option
 int internal_set_sock_opt(lua_State *L) {
+  int socket = lua_tointeger(L, 1);
+  int level = lua_tointeger(L, 2);
+  int name = lua_tointeger(L, 3);
+  char *value;
+  int data_type = lua_type(L, 4);
+  if (data_type == LUA_TSTRING) {
+    value = lua_tostring(L, 4);
+  } else if (data_type == LUA_TNUMBER) {
+    int valueNumber = lua_tointeger(L, 4);
+    value = (char *)&valueNumber;
+  }
+  int length = lua_tointeger(L, 5);
+
+  errno = 0;
+  int result = setsockopt(socket, level, name, value, &length);
+  if (result == -1) {
+    char text[1024];
+    sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
+    luaL_error(L, text);
+  }
   return 0;
 }
 
