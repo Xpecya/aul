@@ -699,9 +699,10 @@ int internal_recv(lua_State *L) {
   memset(data, 0, length);
 
   int flags = get_flags(L, 3);
-  recv(socket, data, length, flags);
+  int receive_length = recv(socket, data, length, flags);
   lua_pushstring(L, data);
-  return 1;
+  lua_pushinteger(L, receive_length);
+  return 2;
 }
 
 // send to
@@ -781,7 +782,7 @@ int internal_get_sock_opt(lua_State *L) {
     luaL_error(L, text);
     return 0;
   }
-  return internal_to_table(L, &result_addr, result_length);
+  return internal_to_table(L, &result_addr, sizeof(result_addr));
 }
 
 // set socket option
@@ -789,7 +790,7 @@ int internal_set_sock_opt(lua_State *L) {
   int socket = lua_tointeger(L, 1);
   int level = lua_tointeger(L, 2);
   int name = lua_tointeger(L, 3);
-  char *value;
+  const char *value;
   int data_type = lua_type(L, 4);
   if (data_type == LUA_TSTRING) {
     value = lua_tostring(L, 4);
@@ -800,7 +801,7 @@ int internal_set_sock_opt(lua_State *L) {
   int length = lua_tointeger(L, 5);
 
   errno = 0;
-  int result = setsockopt(socket, level, name, value, &length);
+  int result = setsockopt(socket, level, name, value, length);
   if (result == -1) {
     char text[1024];
     sprintf(text, "error code: %d, error message: %s\r\n", errno, strerror(errno));
