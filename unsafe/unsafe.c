@@ -52,7 +52,7 @@ static const luaL_Reg register_function[] = {
   {NULL, NULL}
 };
 
-int luaopen_aul_unsafe_unsafe_internal(lua_State *L) {
+int luaopen_aul_unsafe_internal(lua_State *L) {
   luaL_newlib(L, register_function);
   return 1;
 }
