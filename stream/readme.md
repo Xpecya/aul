@@ -1,6 +1,6 @@
 # Stream
 
-Stream api allows you control your array data in another way<br />
+Stream api allows you to control your array data in another way<br />
 
 to create a Stream instance:
 
@@ -31,14 +31,14 @@ Here are functions for stream instance: <br />
 # Middle Function
 
 the middle function means that this function will NOT execute directly<br />
-it will be executed only if you call the collecing function<br />
+it will be executed only if you call the collecting function<br />
 you may use several middle functions as needed<br />
 <br />
 middle functions are: map, filter, distinct, flatMap, limit, peek, skip, sort
 
 # Collecting Function
 
-the collecting function is the function which ends the stream and collecte the result as needed<br />
+the collecting function is the function which ends the stream and collects the result as needed<br />
 all middle functions will be executed by the order you call them<br />
 the Collecting function can only be executed once and the result is no longer a stream object<br />
 <br />
@@ -63,7 +63,7 @@ map function allows you convert each item in the stream to another item
 
 after the collecting function toArray is called, the map function is executed and each item plus 1<br />
 
-of course you can change the type of the item:
+of course, you can change the type of the item:
 
     -- Stream.of(1, 2, 3, 4, 5)
     stream.map(function(item) 
@@ -85,7 +85,7 @@ and the result is as shown
 
 # Filter
 
-filter function allows you choose the data you need:
+filter function allows you to choose the data you need:
 
     -- Stream.of(1, 2, 3, 4, 5)
     stream.filter(function(item) 
@@ -179,15 +179,15 @@ sort function uses table.sort() function to sort the data in the particular orde
     -- Stream.of(1, 5, 2, 4, 3)
     stream.sort().toArray(); -- {1, 2, 3, 4, 5}
 
-of course you can specify your own comparator function just like when you are using table.sort():
+of course, you can specify your own comparator function just like when you are using table.sort():
 
     -- Stream.of(1, 5, 2, 4, 3)
     stream.sort(function(a, b) 
         return a > b;
     end).toArray(); -- {5, 4, 3, 2, 1}
 
-as you know, table.sort is not stable, so stream.sort is also not stable<br />
-will only be stable when Lua offically update their sort function LOL
+as you know, table.sort() is not stable, so stream.sort() is also not stable<br />
+will only be stable when Lua officially update their sort function LOL
 
 # toTable
 
@@ -241,4 +241,4 @@ reduce function accepts two elements in the stream and reduce them into one elem
     end) -- 15
 
 reduce function firstly add 1 and 2, then we get 3, then 3 becomes the first arg of reduce and 4, as the coming next element, becomes the second arg<br />
-so reduce will add 3 and 3, and we get 6, then add 6 and 4, then we get 10, then add 10 and 5 and we get the final result 15 
+so reduce will add 3 and 3, and we get 6, then add 6 and 4, then we get 10, then add 10 and 5, and we get the final result 15 
