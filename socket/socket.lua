@@ -91,10 +91,13 @@ local function getFlags(flags, acceptTable)
     return flagData;
 end
 
+local function localSocket(domain, socketType, protocol)
+    return Internal.socket(getSocketParams(domain, socketType, protocol));
+end
+
 return setmetatable({}, MetatableBuilder.new().immutable().index({
-    socket = function(domain, socketType, protocol)
-        return Internal.socket(getSocketParams(domain, socketType, protocol));
-    end,
+    socket = localSocket,
+    create = localSocket,
     socketpair = function(domain, socketType, protocol, fileDescriptors)
         local fd1, fd2 = Internal.socketpair(getSocketParams(domain, socketType, protocol));
         if type(fileDescriptors) == "table" then
