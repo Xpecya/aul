@@ -59,3 +59,19 @@ The second param can be <b>ANYTHING</b>.<br />
 If the second param is a number or nil then official table.remove() function will be used.<br />
 Otherwise it is considered as the key of the given hash table<br />
 And remove the value of this key, then return the value<br />
+
+## File.fdopen
+
+In Lua Programming language you can only get a file with its name<br />
+Lua will open the file with its name and return a file object<br />
+Which contains functions like lines, read, write etc ... <br />
+fdopen, a well-known function defined in stdio.h, can convert a file fd to a FILE*<br />
+this utility provides a way to do the same thing in Lua <br />
+Only available in <b>Linux</b> right now<br />
+There is no way to get a file fd in Lua according to the official library, but it's useful with other 3rd party libs<br />
+
+    local file = require "aul.standard.file";
+    local fileObject = file.fdopen(fileFD, "rw");
+    for line in fileObject:lines() do 
+        -- do something
+    end
