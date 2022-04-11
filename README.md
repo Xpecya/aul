@@ -17,7 +17,7 @@ For English users, it is enough to read the English part only<br />
 Generally speaking, I'll write useful things in English and free chat in Chinese LOL<br />
 have fun~<br />
 <br />
-AUL是"Awsome Utilities for Lua" (lua编程的炒鸡棒工具包) 的缩写<br />
+AUL是"Awesome Utilities for Lua" (lua编程的炒鸡棒工具包) 的缩写<br />
 (当然也是lua倒过来的哈哈哈哈其实这个才是重点哈哈哈哈)<br />
 这个项目包含了许多我觉得很有用的工具 有些是我写的 有些是别人写的<br />
 (其他人写的一般比较叼= =)<br />
